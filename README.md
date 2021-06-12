@@ -1,1 +1,1 @@
-# pinescript_strategies
+# Pinescript Strategies for TradingView
