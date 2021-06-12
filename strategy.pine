@@ -1,0 +1,59 @@
+//@version=4
+strategy("RSI strategy - to replicate on STB", overlay=true, pyramiding=1, commission_value=0.2, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+
+// Input
+backtestStart = input(defval = timestamp("01 Apr 2020 13:30 +0000"), title = "Backtest Start Time", type = input.time)
+
+rsiOverbought = input(70, minval=1)
+rsiOversold = input(30, minval=1)
+
+stopLossPerc = input(0.95, minval=0.01, step=0.01, title="Stop loss percent")
+
+fastMAlen = input(12, minval=1, title="MACD fast moving average")
+slowMAlen = input(26, minval=1, title="MACD slow moving average")
+
+signalMACDlen = input(9,minval=1, title="MACD signal line moving average")
+
+// Trailing stop loss
+var entryPrice = float(0)
+var stopLossPrice = float(0)
+
+
+// RSI calculation
+rsiValue = rsi(close, 14)
+
+// MACD calculation
+MACD = ema(close, fastMAlen) - ema(close, slowMAlen)
+signalMACD = ema(MACD, signalMACDlen)
+deltaMACD = MACD - signalMACD
+fastMA = ema(close,fastMAlen)
+slowMA = ema(close,slowMAlen)
+
+// Plot RSI
+//plot(rsiValue, color=color.white, linewidth=2)
+//plot(rsiOversold, color=color.green)
+//plot(rsiOverbought, color=color.red)
+
+// Plot MACD
+//plot(MACD, color=color.aqua)
+//plot(signalMACD, color=color.orange)
+
+// plot SL line
+slColor = strategy.position_size > 0 ? color.green : color.black
+plot(stopLossPrice, color=slColor)
+
+// Conditions
+longPosition = crossover(rsiValue, rsiOversold)
+
+
+if time >= backtestStart
+    
+    if strategy.position_size > 0
+        stopLossPrice := max(close * stopLossPerc, stopLossPrice)
+        if close <= stopLossPrice
+            strategy.close("Order", comment="Close")
+
+    else if longPosition
+        entryPrice := close
+        stopLossPrice := close * stopLossPerc
+        strategy.entry("Order", strategy.long, comment="Open")
