@@ -46,16 +46,16 @@ plot(stopLossPrice, color=slColor)
 // Trade conditions
 
 //longPosition = crossover(rsiValue, rsiOversold) and MACD > signalMACD
-longPosition = close > 10
+longPosition = rising(close, 5)
 
-if time >= backtestStart
+//if time >= backtestStart
     
-    if strategy.position_size > 0
-        stopLossPrice := max(close * stopLossPerc, stopLossPrice)
-        if close <= stopLossPrice
-            strategy.close("Order", comment="Close")
+if strategy.position_size > 0
+    stopLossPrice := max(close * stopLossPerc, stopLossPrice)
+    if close <= stopLossPrice
+        strategy.close("Order", comment="Close")
 
-    else if longPosition
-        entryPrice := close
-        stopLossPrice := close * stopLossPerc
-        strategy.entry("Order", strategy.long, comment="Open")
+else if longPosition
+    entryPrice := close
+    stopLossPrice := close * stopLossPerc
+    strategy.entry("Order", strategy.long, comment="Open")
