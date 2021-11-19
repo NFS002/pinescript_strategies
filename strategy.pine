@@ -1,13 +1,11 @@
-
-
 // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
 
 //@version=4
-strategy("RSI and MACD - to replicate on STB", overlay=false, pyramiding=1, commission_value=0.2, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
+strategy("Trailing SL template strategy", overlay=true, pyramiding=1, commission_value=0.2, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
 // Input
 backtestStart = input(defval = timestamp("01 Apr 2021 13:30 +0000"), title = "Backtest Start Time", type = input.time)
-var stopLossPerc = 0.95
+var stopLossPerc = input(title="Trailing SL %", type=input.float, defval=0.95, minval=0.01, maxval=1, step=0.01)
 
 rsiOverbought = input(30, minval=1)
 rsiOversold = input(70, minval=1)
