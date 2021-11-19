@@ -4,17 +4,15 @@
 //@version=4
 strategy("Panneled indicator(s)", overlay=false, pyramiding=1, commission_value=0.2, default_qty_type=strategy.percent_of_equity, default_qty_value=100)
 
-fastMAlen = input(12, minval=1, title="MACD fast moving average - Indicator")
-slowMAlen = input(26, minval=1, title="MACD slow moving average - Indicator")
+//@version=4
+// Inputs
+fastLen = input(title="Fast Length", defval=12)
+slowLen = input(title="Slow Length", defval=26)
+sigLen  = input(title="Signal Length", defval=9)
 
-signalMACDlen = input(9,minval=1, title="MACD signal line moving average - Indicator")
+// MACD calculation
+[macdLine, signalLine, _] = macd(close, fastLen, slowLen, sigLen)
 
-
-
-MACD = ema(close, fastMAlen) - ema(close, slowMAlen)
-signalMACD = ema(MACD, signalMACDlen)
-deltaMACD = MACD - signalMACD
-
-// Plot RSI
-plot(deltaMACD)
-plot(0)
+// MACD values and line
+plot(series=macdLine, color=color.green, linewidth=2)
+plot(series=signalLine, color=color.orange, linewidth=2)

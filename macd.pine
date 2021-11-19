@@ -1,0 +1,35 @@
+//@version=4
+strategy(title="The ultimate strategy v1", shorttitle="Strategy", overlay=true, pyramiding=1, commission_value=0.2, default_qty_type=strategy.percent_of_equity, default_qty_value=10)
+
+// Trailing stop loss
+var entryPrice = float(0)
+var stopLossPrice = float(0)
+
+// Inputs
+fastLen = input(title="Fast Length", defval=12)
+slowLen = input(title="Slow Length", defval=26)
+sigLen  = input(title="Signal Length", defval=9)
+
+stopLossPerc = input(0.7, minval=0.01, step=0.01, title="Stop loss percent")
+
+// MACD calculation
+[macdLine, signalLine, _] = macd(close, fastLen, slowLen, sigLen)
+
+// plot SL line
+slColor = strategy.position_size > 0 ? color.green : color.black
+plot(stopLossPrice, color=slColor)
+
+// Conditions
+// Determine long and short conditions
+longCondition  = crossover(macdLine, signalLine)
+
+
+if strategy.position_size > 0
+    stopLossPrice := max(close * stopLossPerc, stopLossPrice)
+    if close <= stopLossPrice
+        strategy.close("Order", comment="Close")
+
+else if longCondition
+    entryPrice := close
+    stopLossPrice := close * stopLossPerc
+    strategy.entry("Order", strategy.long, comment="Open")
