@@ -15,6 +15,8 @@ slowMAlen = input(26, minval=1, title="MACD slow moving average")
 
 signalMACDlen = input(9,minval=1, title="MACD signal line moving average")
 
+nConsecutiveRising = input(3, minval=1, "Number of consecutive rising days")
+
 // Initialise variables
 var entryPrice = float(0)
 var stopLossPrice = float(0)
@@ -46,10 +48,8 @@ plot(stopLossPrice, color=slColor)
 // Trade conditions
 
 //longPosition = crossover(rsiValue, rsiOversold) and MACD > signalMACD
-longPosition = rising(close, 5)
+longPosition = rising(close, nConsecutiveRising)
 
-//if time >= backtestStart
-    
 if strategy.position_size > 0
     stopLossPrice := max(close * stopLossPerc, stopLossPrice)
     if close <= stopLossPrice
