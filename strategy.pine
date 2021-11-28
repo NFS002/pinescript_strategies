@@ -10,12 +10,11 @@ var stopLossPerc = input(title="Trailing SL %", type=input.float, defval=0.95, m
 rsiOverbought = input(30, minval=1)
 rsiOversold = input(70, minval=1)
 
-fastMAlen = input(12, minval=1, title="MACD fast moving average")
-slowMAlen = input(26, minval=1, title="MACD slow moving average")
+smaLen = input(20, minval=1, title="SMA length")
 
 signalMACDlen = input(9,minval=1, title="MACD signal line moving average")
 
-nConsecutiveRising = input(3, minval=1, "Number of consecutive rising days")
+nConsecutiveRising = input(5, minval=1, title="Number of consecutive rising days")
 
 // Initialise variables
 var entryPrice = float(0)
@@ -30,7 +29,7 @@ var stopLossPrice = float(0)
 // signalMACD = ema(MACD, signalMACDlen)
 // deltaMACD = MACD - signalMACD
 // fastMA = ema(close, fastMAlen)
-// slowMA = ema(close, slowMAlen)
+sma0 = ema(close, smaLen)
 
 // Plot RSI
 // plot(rsiValue, color=color.white, linewidth=2)
@@ -39,7 +38,7 @@ var stopLossPrice = float(0)
 
 // Plot MACD
 // plot(MACD, color=color.navy)
-// plot(signalMACD, color=color.orange)
+plot(sma0, color=color.orange)
 
 // Plot SL line
 slColor = strategy.position_size > 0 ? color.green : color.black
@@ -48,7 +47,7 @@ plot(stopLossPrice, color=slColor)
 // Trade conditions
 
 //longPosition = crossover(rsiValue, rsiOversold) and MACD > signalMACD
-longPosition = rising(close, nConsecutiveRising)
+longPosition = rising(sma0, nConsecutiveRising)
 
 if strategy.position_size > 0
     stopLossPrice := max(close * stopLossPerc, stopLossPrice)
